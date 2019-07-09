@@ -25,9 +25,9 @@ import com.google.android.gms.tasks.Task;
 public class MainActivity extends AppCompatActivity {
 
     Button btnLastLocation, btnLocationUpdate, btnRemoveLocationUpdate;
-
+    FusedLocationProviderClient client;
 //    LocationRequest mLocationRequest;
-//    LocationCallback mLocationCallback;
+    LocationCallback mLocationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,16 +37,11 @@ public class MainActivity extends AppCompatActivity {
         btnLastLocation = findViewById(R.id.btnGetLastLocation);
         btnLocationUpdate = findViewById(R.id.btnGetLocationUpdate);
         btnRemoveLocationUpdate = findViewById(R.id.btnRemovelLocationUpdate);
-        
-        FusedLocationProviderClient client;
+
+        //FusedLocationProviderClient client;
         client = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
-//        LocationRequest mLocationRequest = LocationRequest();
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//        mLocationRequest.setInterval(10000);
-//        mLocationRequest.setFastestInterval(5000);
-//        mLocationRequest.setSmallestDisplacement(100);
-        final LocationCallback mLocationCallback = new LocationCallback() {
+        mLocationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult != null) {
@@ -88,14 +83,17 @@ public class MainActivity extends AppCompatActivity {
                 if (checkPermission()) {
 
                     LocationRequest mLocationRequest = new LocationRequest();
-                    mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                     mLocationRequest.setInterval(10000);
                     mLocationRequest.setFastestInterval(5000);
                     mLocationRequest.setSmallestDisplacement(100);
 
-
-
                     client.requestLocationUpdates(mLocationRequest, mLocationCallback, null);
+                    Log.d("LocationRequest", "" + mLocationRequest);
+                    Log.d("Location Call Back", mLocationCallback + "");
+                } else {
+                    String msg = "Permission not granted to be retrieve location info";
+                    Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -103,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         btnRemoveLocationUpdate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //client.removeLocationUpdates(mLocationReq)
+                client.removeLocationUpdates(mLocationCallback);
             }
         });
 
